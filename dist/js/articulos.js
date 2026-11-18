@@ -155,7 +155,7 @@
       pages.forEach(function (pg, i) { list.appendChild(pageRow(a, pg, i, pages.length, isCur)); });
       if (isCur) {
         list.appendChild(h('li', { class: 'art-add' }, [
-          h('button', { type: 'button', class: 'btn btn-ghost', 'data-action': 'gallery:page' }, [icon('ic-plus'), h('span', { text: 'Añadir una página' })])
+          h('button', { type: 'button', class: 'btn btn-ghost', 'data-action': 'page-new' }, [icon('ic-plus'), h('span', { text: 'Añadir una página' })])
         ]));
       }
     });

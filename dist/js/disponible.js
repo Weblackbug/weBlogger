@@ -57,7 +57,7 @@
     'page-prev': function () { return hasDoc() && pub().cur > 0 || [false, 'Ya estás en la primera página']; },
     'page-next': function () { return hasDoc() && pub().cur < pub().pages.length - 1 || [false, 'Ya estás en la última página']; },
     'page-del': function () { return hasDoc() && pub().pages.length > 1 || [false, 'Una publicación necesita al menos una página']; },
-    'page-go': 'doc', 'page-dup': 'doc', 'page-state': 'doc', 'page-rename': 'doc',
+    'page-go': 'doc', 'page-new': 'doc', 'page-dup': 'doc', 'page-state': 'doc', 'page-rename': 'doc',
     'dock-tab': function (arg) { return arg === 'page' || arg === 'outline' ? 'doc' : true; },
     backgrounds: 'blog', toc: 'doc', capture: 'desk',
     'preview-device': true, 'preview-close': true

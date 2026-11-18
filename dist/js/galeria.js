@@ -206,6 +206,8 @@
 
   function choose(st) {
     var name = inName.value.trim() || MODES[mode].def;
+    // en un periodico la pagina no lleva titular propio: se llama por su numero
+    if (mode === 'page' && WB.pub.medium === 'periodico') name = 'Página ' + (WB.pub.cur + 2);
     G.close();
     if (mode === 'restyle') { WB.pub.restyle(st); return; }
     if (mode === 'page') { WB.pub.add(st, name).catch(WB.ui.fail); return; }
@@ -242,7 +244,7 @@
       mode === 'article' ? 'Blog' : (WB.pub.medium === 'periodico' ? 'Periódico' : 'Blog');
     titleEl.textContent = MODES[mode].title + ' (' + kind + ') — ' + S.list.length + ' estilos de prensa';
     subEl.textContent = MODES[mode].sub;
-    layer.querySelector('.gal-field-name').hidden = mode === 'restyle';
+    layer.querySelector('.gal-field-name').hidden = mode === 'restyle' || (mode === 'page' && WB.pub.medium === 'periodico');
     layer.querySelector('.gal-ask').textContent = MODES[mode].ask;
     pv.use.textContent = MODES[mode].go;
     inName.value = (mode === 'article' && G.opts && G.opts.name) || '';
@@ -252,7 +254,7 @@
     fill();
     if (chosen) showPreview(chosen);
     requestAnimationFrame(fitPreview);
-    (mode === 'restyle' ? inSearch : inName).focus();
+    (layer.querySelector('.gal-field-name').hidden ? inSearch : inName).focus();
   };
 
   G.close = function () {

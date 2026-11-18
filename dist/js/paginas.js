@@ -142,6 +142,52 @@
     return mountCurrent().then(function () { WB.ui.status('página nueva: ' + name + ' · estilo ' + st.name); });
   };
 
+  /* ------------------------------------------------------------------------
+     Pagina interior de periodico, como en los programas de maquetacion: no
+     pide titulo ni repite la portada. Hereda el estilo de la pagina actual
+     (la «pagina maestra») y llega con su folio (numero, cabecera, fecha y
+     seccion) y la rejilla de columnas vacia, lista para rellenar.
+     ------------------------------------------------------------------------ */
+  var FILL = 'Escribe aquí el texto. Las columnas se llenan solas y el corte de cada hoja se ve en rojo.';
+
+  function fillerBody(s, n) {
+    var e = WB.esc, st = WB.styles.byId[s.style];
+    // el nombre tal como esta escrito en la cabecera de la portada (stash ya guardo la actual)
+    var front = looseDoc(pub.pages[0].body).querySelector('.np-nameplate-name, .np-masthead, .masthead-name');
+    var mast = (front && front.textContent.trim()) || (st ? st.mast : (pub.pages[0].s.title || 'El periódico'));
+    var fecha = WB.styles.ctx && st ? WB.styles.ctx(st, '').fecha : new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    var story = WB.npStory;
+    function pieza(span, size, tit, ps) {
+      return story(span, '<h3 class="np-title ' + size + '">' + tit + '</h3>' + ps.map(function (p) { return '<p>' + p + '</p>'; }).join(''));
+    }
+    return '<main class="article-wrapper no-toc np-wide"><article class="article-content">' +
+      '<section class="article-section np-interior" id="pagina-' + n + '-' + WB.uid() + '">' +
+        '<nav class="np-nav np-folio"><a href="#">Página ' + n + '</a><a href="#">' + e(mast) + '</a><a href="#">' + e(fecha) + '</a><a href="#">Sección</a></nav>' +
+        '<div class="np-grid rules">' +
+          pieza(8, 'np-lg', 'Titular de la noticia principal de la página', [FILL, FILL]) +
+          pieza(4, 'np-md', 'Segunda noticia', [FILL]) +
+          pieza(4, 'np-sm', 'Noticia', [FILL]) +
+          pieza(4, 'np-sm', 'Noticia', [FILL]) +
+          pieza(4, 'np-sm', 'Noticia', [FILL]) +
+        '</div>' +
+      '</section></article></main>';
+  }
+
+  /** Pagina interior detras de la actual, con el estilo de la actual. */
+  pub.addFiller = function () {
+    if (!E.idoc) return Promise.resolve();
+    stash();
+    var base = pub.pages[pub.cur].s, n = pub.cur + 2;
+    var s = JSON.parse(JSON.stringify(base));
+    s.key = pub.pages[0].s.key + '-p' + (pub.pages.length + 1) + WB.uid();
+    s.pageName = 'Página ' + n;
+    delete s.estado;
+    pub.pages.splice(pub.cur + 1, 0, { s: s, body: fillerBody(s, n) });
+    pub.cur++;
+    WB.ui.markDirty(true);
+    return mountCurrent().then(function () { WB.ui.status('página ' + n + ' añadida, con el estilo de la anterior: rellénala'); });
+  };
+
   pub.duplicate = function (i) {
     stash();
     var p = pub.pages[i];
@@ -300,7 +346,15 @@
       bar.appendChild(tab);
     });
 
-    bar.appendChild(h('button', { type: 'button', class: 'pg-add', title: 'Añadir una página con el estilo que elijas', 'data-action': 'gallery:page' }, [WB.ui.svgUse('ic-plus'), h('span', { text: 'Página' })]));
+    var paper = pub.medium === 'periodico';
+    var add = h('button', { type: 'button', class: 'pg-add', 'data-action': 'page-new',
+      title: paper ? 'Añadir una página interior con el mismo estilo · botón derecho: otras opciones' : 'Añadir una página con el estilo que elijas' },
+      [WB.ui.svgUse('ic-plus'), h('span', { text: 'Página' })]);
+    add.addEventListener('contextmenu', function (ev) {
+      ev.preventDefault();
+      WB.ui.popup(addItems(), add);
+    });
+    bar.appendChild(add);
     bar.appendChild(h('span', { class: 'tool-spacer' }));
     if (WB.edition) WB.edition.decorateBar(bar);
     var st = WB.styles.byId[D.s.style];
@@ -312,7 +366,21 @@
   var baseRender = render;
   render = function () { baseRender(); if (WB.articles) WB.articles.renderSoon(); };
 
+  function addItems() {
+    return [
+      { icon: 'ic-plus', label: 'Página interior (mismo estilo, para rellenar)', action: 'page-new:interior' },
+      { icon: 'ic-copy', label: 'Copia de esta página', action: 'page-dup:' + pub.cur },
+      { icon: 'ic-palette', label: 'Página con otro estilo de prensa…', action: 'gallery:page' }
+    ];
+  }
+  pub.addItems = addItems;
+
   var X = WB.actions;
+  // periodico: pagina interior directa; blog: se elige el estilo
+  X['page-new'] = function (how) {
+    if (how === 'interior' || pub.medium === 'periodico') return pub.addFiller();
+    return WB.gallery.open('page');
+  };
   X['page-go'] = function (i) { return pub.go(+i); };
   X['page-rename'] = function (i) { return pub.rename(+i); };
   X['page-dup'] = function (i) { return pub.duplicate(+i); };

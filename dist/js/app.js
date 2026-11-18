@@ -668,7 +668,8 @@
     },
     {
       label: 'Artículo', items: [
-        { icon: 'ic-plus', label: 'Página nueva…', action: 'gallery:page' },
+        { icon: 'ic-plus', label: 'Página nueva', action: 'page-new' },
+        { icon: 'ic-plus', label: 'Página con otro estilo de prensa…', action: 'gallery:page' },
         { icon: 'ic-palette', label: 'Cambiar el estilo de la página…', action: 'gallery:restyle' },
         { group: 'Tipo de publicación' },
         { icon: 'ic-globe', label: 'Blog (web, lectura seguida)', action: 'medium:blog', check: 'medium:blog' },
