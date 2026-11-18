@@ -1272,3 +1272,30 @@ html.is-busy, html.is-busy * { cursor: progress !important; }
 .bgp-current { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--txt-2); margin-bottom: 8px; }
 .bgp-current-sw { width: 54px; height: 36px; flex: none; border-radius: 4px; border: 1px solid var(--line-2); background-color: var(--bg-3); }
 .tp-bg-cat::after { display: none; }
+
+/* ============================================ capturar estilo de pagina === */
+.cap-layer { grid-template-rows: auto auto minmax(0, 1fr); }
+.cap-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 360px; gap: 14px; padding: 14px 18px 16px; min-height: 0; }
+.cap-col { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 8px; min-height: 0; }
+.cap-col h3 { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--txt-3); }
+.cap-view { min-height: 0; }
+.cap-side { display: flex; flex-direction: column; gap: 12px; min-height: 0; overflow-y: auto; padding-right: 4px; }
+.cap-steps { margin: 0; padding: 0 0 0 4px; list-style: none; display: grid; gap: 4px; font-size: 12.5px; }
+.cap-steps li { display: flex; gap: 8px; align-items: baseline; color: var(--txt-2); }
+.cap-steps li::before { content: "✓"; color: var(--ok, #3d8b55); width: 14px; flex: none; }
+.cap-steps li.is-now { color: var(--txt); }
+.cap-steps li.is-now::before { content: "…"; color: var(--accent); }
+.cap-steps li.is-error { color: var(--danger, #c0443f); }
+.cap-steps li.is-error::before { content: "✕"; color: var(--danger, #c0443f); }
+.cap-group { border: 1px solid var(--line); border-radius: var(--radius-s); padding: 10px 12px; background: var(--bg-2); display: grid; gap: 6px; }
+.cap-group h4 { margin: 0 0 2px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--txt-3); }
+.cap-row { display: grid; grid-template-columns: 96px 1fr; gap: 8px; font-size: 12px; color: var(--txt-3); align-items: center; }
+.cap-row b { color: var(--txt); font-weight: 500; overflow-wrap: anywhere; }
+.cap-sws { display: flex; flex-wrap: wrap; gap: 4px; }
+.cap-sw { width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--line-2); }
+.cap-libs { margin: 2px 0 0; padding-left: 16px; font-size: 12px; color: var(--txt-2); display: grid; gap: 3px; }
+.cap-libs b { color: var(--txt); font-weight: 600; }
+.cap-warn { margin: 0; font-size: 12px; color: var(--warn, #c98a12); }
+.cap-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.cap-layer.is-working .cap-view { opacity: .85; }
+@media (max-width: 1300px) { .cap-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .cap-side { grid-column: 1 / -1; max-height: 40vh; } }

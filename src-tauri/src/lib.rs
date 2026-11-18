@@ -5,6 +5,7 @@
 // de carpetas del sistema y el control de la ventana.
 
 mod imprenta;
+mod captura;
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -685,6 +686,7 @@ pub fn run() {
             dirty: AtomicBool::new(false),
         })
         .invoke_handler(tauri::generate_handler![
+            captura::fetch_url,
             cfg_read,
             cfg_write,
             env_info,

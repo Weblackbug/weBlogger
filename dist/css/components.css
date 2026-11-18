@@ -42,7 +42,15 @@
   color: var(--accent-txt);
   font-weight: 600;
 }
-.btn-primary:hover { filter: brightness(1.08); }
+/* el hover de .btn pone el texto oscuro: aqui se mantiene el del acento
+   (en el tema claro el acento es casi negro y quedaba oscuro sobre oscuro) */
+.btn-primary:hover {
+  color: var(--accent-txt);
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--sel), var(--shadow-2);
+}
+.btn-primary:disabled:hover { background: var(--accent); transform: none; box-shadow: none; }
 
 .btn-danger { border-color: var(--danger); color: var(--danger); }
 .btn-danger:hover { background: var(--danger); color: var(--accent-txt); border-color: var(--danger); }
@@ -485,3 +493,9 @@
   background: var(--accent);
   transition: width var(--dur-m) var(--ease);
 }
+
+/* lo que no se puede usar ahora (js/disponible.js): en gris y sin reaccionar */
+.icon-btn:disabled, .glyph-btn:disabled, .tool-field select:disabled, .page-bar button:disabled {
+  opacity: .38; cursor: not-allowed; pointer-events: auto; background: none; box-shadow: none;
+}
+.icon-btn:disabled:hover, .glyph-btn:disabled:hover { background: none; color: inherit; }

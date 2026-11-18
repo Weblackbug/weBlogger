@@ -22,6 +22,7 @@ rfd = "0.15"
 lopdf = { version = "0.36.0", default-features = false }
 flate2 = "1.1.11"
 jpeg-decoder = { version = "0.3.2", default-features = false }
+ureq = "2"
 
 [profile.release]
 codegen-units = 1

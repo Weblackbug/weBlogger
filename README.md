@@ -95,9 +95,21 @@ a weBlogger: doble clic en el Explorador y se abren.
 
 ## Plantillas de blog
 
-La tarjeta **Blog** de la biblioteca abre el selector de plantillas: fichas con
-miniatura a la izquierda y la página de verdad, a escala, a la derecha. Clic
-para verla, doble clic o *Crear el blog* para usarla.
+La tarjeta **Blog** de la biblioteca (o *Archivo → Nuevo blog con plantilla…*)
+abre el selector: **286 plantillas originales**, con buscador y filtro por
+colección. Fichas con miniatura a la izquierda y la página de verdad, a escala,
+a la derecha. Clic para verla, doble clic o *Crear el blog* para usarla.
+
+- 34 escritas a mano (tabla de abajo).
+- **252 de colección**: 28 temas (huerto, panadería, vino, café, montaña,
+  ciclismo, correr, yoga, crianza, mascotas, fotografía, cine, música,
+  videojuegos, programación, emprendimiento, finanzas, decoración, arquitectura,
+  historia local, astronomía, medio ambiente, motor, artesanía, idiomas, teatro,
+  mar y vela, viajes en furgoneta) × 9 estructuras (clásica, portada a toda
+  pantalla, columna de lectura, guía práctica, revista, cuaderno, ficha técnica,
+  crónica, álbum de fotos, boletín). Cada tema trae sus textos, cifras, pasos y
+  preguntas; cada plantilla, su paleta a medida, su pareja de fuentes y su fondo.
+- Las que captures de la web (abajo), en *Capturadas de la web*.
 
 | Grupo | Plantillas |
 |---|---|
@@ -122,6 +134,32 @@ SVG y CSS, sin imágenes de nadie. Al hacer clic se ven en la página al momento
 su **velo** para que se lea el texto. Seleccionando la portada, *Propiedades → Diseño de la
 portada* cambia entre foto al lado, **foto a toda la portada** con el titular
 encima, o portada centrada sin foto.
+
+## Capturar estilo de página
+
+*Archivo → Capturar estilo de página…* (o el botón del selector de plantillas):
+se pega un enlace y weBlogger
+
+1. descarga el HTML, sus hojas CSS (con sus `@import`) y sus scripts;
+2. maqueta la página en un marco aislado, con su CSS pero **sin ejecutar su
+   JavaScript**, y la enseña a la izquierda;
+3. mide lo que se ve: fondo, texto, color de acento (enlaces y botones), los
+   colores más usados, fuentes y tamaños de titulares y texto, peso,
+   mayúsculas, interletra, esquinas, sombras, ancho de la columna, cabecera,
+   menú, tipo de portada, barra lateral, tarjetas, galerías, citas, tablas,
+   vídeos y suscripción;
+4. lee los scripts para saber qué usa (sliders, animaciones, visor de fotos,
+   modo oscuro, WordPress, estadísticas…) y dice su equivalente en weBlogger;
+5. compone a la derecha **un blog muy parecido**: misma paleta (y su versión
+   oscura o clara), fuentes equivalentes del catálogo, misma portada y
+   estructura, y reglas CSS propias que imitan los rasgos medidos.
+
+*Crear blog con este estilo* lo abre para escribir; *Guardar como plantilla*
+lo deja en el selector (se guarda en `plantillas-capturadas.json` dentro de la
+biblioteca). Se toma el estilo, no el contenido: los textos, las fotos, los
+logotipos y el JavaScript de la web no se copian. Las webs que se dibujan solo
+con JavaScript se analizan sobre todo por sus hojas CSS. Necesita la aplicación
+de escritorio (la descarga la hace Rust, `src-tauri/src/captura.rs`).
 
 ## Barra de carga
 
@@ -256,6 +294,8 @@ weBlogger/
 │     ├─ bloques.js             catálogo: tipos, elementos, fuentes, paletas
 │     ├─ plantillas.js          plantillas de blog (BitxoSOFT y con fondo)
 │     ├─ plantillas-mas.js      22 plantillas con formatos de blog conocidos
+│     ├─ plantillas-gen.js      252 plantillas de colección (28 temas × 9)
+│     ├─ captura.js             capturar el estilo de una página
 │     ├─ fondos-catalogo.js     125 fondos generados (papel, madera, piedra…)
 │     ├─ fondos.js              selector de plantillas y de fondos, portada
 │     ├─ ocupado.js             barra de carga (se carga la última)

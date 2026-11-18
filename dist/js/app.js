@@ -577,7 +577,7 @@
     var out = [];
     WB.CATALOG.forEach(function (c) {
       out.push({
-        icon: c.items[0].icon, label: c.cat,
+        icon: c.items[0].icon, label: c.cat, need: 'doc',
         sub: c.items.map(function (it) { return { icon: it.icon, label: it.name, action: 'insert:' + it.id }; })
       });
     });
@@ -616,15 +616,16 @@
   WB.ui.setMenus([
     {
       label: 'Archivo', items: [
-        { icon: 'ic-new', label: 'Nuevo artículo', accel: 'Ctrl+N', sub: function () { return WB.TEMPLATES.map(function (t) { return { icon: 'ic-new', label: t.name, action: 'new:' + t.id }; }); } },
-        { icon: 'ic-sparkle', label: 'Nueva edición: blog o periódico…', accel: 'Ctrl+Mayús+N', action: 'edition' },
+        { icon: 'ic-new', label: 'Nueva edición…', accel: 'Ctrl+N', action: 'edition' },
+        { icon: 'ic-globe', label: 'Nuevo blog con plantilla… (' + WB.TEMPLATES.length + ')', action: 'templates' },
+        { icon: 'ic-sparkle', label: 'Capturar estilo de página…', action: 'capture' },
         { icon: 'ic-book', label: 'Biblioteca', accel: 'Ctrl+O', action: 'library' },
         { icon: 'ic-open', label: 'Abrir una carpeta de artículo…', action: 'open-folder' },
         { sep: true },
         { icon: 'ic-save', label: 'Guardar', accel: 'Ctrl+S', action: 'save' },
         { icon: 'ic-saveas', label: 'Guardar como…', accel: 'Ctrl+Mayús+S', action: 'save-as' },
         { icon: 'ic-new', label: 'PDF para imprenta…', accel: 'Ctrl+P', action: 'press' },
-        { icon: 'ic-saveas', label: 'Exportar', sub: function () { return WB.exp.FORMATS.map(function (f) { return { icon: f.icon, label: f.label, action: 'export:' + f.id }; }); } },
+        { icon: 'ic-saveas', label: 'Exportar', need: 'doc', sub: function () { return WB.exp.FORMATS.map(function (f) { return { icon: f.icon, label: f.label, action: 'export:' + f.id }; }); } },
         { sep: true },
         { icon: 'ic-eye', label: 'Vista previa', accel: 'F5', action: 'preview' },
         { icon: 'ic-globe', label: 'Abrir en el navegador', action: 'browser' },
@@ -659,7 +660,7 @@
         { icon: 'ic-link', label: 'Enlace…', accel: 'Ctrl+K', action: 'link' },
         { icon: 'ic-symbol', label: 'Símbolos…', action: 'symbols' },
         { sep: true },
-        { icon: 'ic-sparkle', label: 'Efecto de texto', sub: function () { return WB.TEXT_FX.map(function (f) { return { label: f.name, action: 'fx:' + f.id }; }); } },
+        { icon: 'ic-sparkle', label: 'Efecto de texto', need: 'text', sub: function () { return WB.TEXT_FX.map(function (f) { return { label: f.name, action: 'fx:' + f.id }; }); } },
         { icon: 'ic-sparkle', label: 'Texto artístico (curvado, 3D)', action: 'art' },
         { sep: true },
         { icon: 'ic-clear', label: 'Quitar el formato', action: 'fmt:removeFormat' }
@@ -672,7 +673,7 @@
         { group: 'Tipo de publicación' },
         { icon: 'ic-globe', label: 'Blog (web, lectura seguida)', action: 'medium:blog', check: 'medium:blog' },
         { icon: 'ic-masthead', label: 'Periódico o revista (papel)', action: 'medium:periodico', check: 'medium:periodico' },
-        { icon: 'ic-new', label: 'Tamaño del papel', sub: function () { return WB.edition.PAPERS.map(function (p) { return { label: p.name + ' · ' + p.mm[0] + '×' + p.mm[1] + ' mm', action: 'paper:' + p.id, check: 'paper:' + p.id, disabled: WB.pub.medium !== 'periodico' }; }); } },
+        { icon: 'ic-new', label: 'Tamaño del papel', need: 'paper', sub: function () { return WB.edition.PAPERS.map(function (p) { return { label: p.name + ' · ' + p.mm[0] + '×' + p.mm[1] + ' mm', action: 'paper:' + p.id, check: 'paper:' + p.id, disabled: WB.pub.medium !== 'periodico' }; }); } },
         { sep: true },
         { icon: 'ic-up', label: 'Página anterior', accel: 'Ctrl+RePág', action: 'page-prev' },
         { icon: 'ic-down', label: 'Página siguiente', accel: 'Ctrl+AvPág', action: 'page-next' },
@@ -682,8 +683,8 @@
         { icon: 'ic-layers', label: 'Esquema', action: 'dock-tab:outline' },
         { sep: true },
         { icon: 'ic-image', label: 'Fondo de la página…', action: 'backgrounds' },
-        { icon: 'ic-palette', label: 'Paleta de colores', sub: function () { return Object.keys(WB.PALETTES).map(function (id) { return { label: WB.PALETTES[id].name, action: 'palette:' + id, check: 'pal:' + id }; }); } },
-        { icon: 'ic-globe', label: 'Idioma que escribo', sub: langItems },
+        { icon: 'ic-palette', label: 'Paleta de colores', need: 'doc', sub: function () { return Object.keys(WB.PALETTES).map(function (id) { return { label: WB.PALETTES[id].name, action: 'palette:' + id, check: 'pal:' + id }; }); } },
+        { icon: 'ic-globe', label: 'Idioma que escribo', need: 'doc', sub: langItems },
         { sep: true },
         { group: 'Ver el artículo en' },
         { icon: 'ic-sun', label: 'Modo claro', action: 'page-theme:light', check: 'pagetheme:light' },

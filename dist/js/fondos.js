@@ -26,7 +26,7 @@
 
   function thumb(t) {
     var th = t.thumb || {};
-    var pal = WB.PALETTES[th.pal || t.palette] || WB.PALETTES.terracota;
+    var pal = th.palette || WB.PALETTES[th.pal || t.palette] || WB.PALETTES.terracota;
     var c = th.dark ? pal.dark : pal.light;
     var box = h('div', { class: 'tp-thumb' + (th.dark ? ' is-dark' : '') + (th.cover ? ' is-cover' : '') + (th.center ? ' is-center' : '') + (th.bg ? ' has-bg' : '') });
     box.style.setProperty('--b', c.bgPrimary);
@@ -63,8 +63,8 @@
 
   /* ===================================================== vista previa === */
 
-  function previewHtml(t) {
-    var name = inName.value.trim() || 'El titular de tu blog';
+  function previewHtml(t, nm) {
+    var name = nm || (inName && inName.value.trim()) || 'El titular de tu blog';
     var built = t.build(name);
     var s = D.blank();
     s.paletteId = t.palette;
@@ -113,6 +113,62 @@
     A.newFrom(t.id, name || undefined).catch(WB.ui.fail);
   }
 
+  var inSearch, selGroup, count, tjob = 0;
+
+  function groupList() {
+    var map = {}, list = [];
+    WB.TEMPLATES.forEach(function (t) {
+      if (t.hidden) return;
+      var g = t.group || 'Básicas';
+      if (!map[g]) { map[g] = { name: g, items: [] }; list.push(map[g]); }
+      map[g].items.push(t);
+    });
+    return list;
+  }
+
+  function norm(x) { return String(x || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+
+  function card(t) {
+    var c = h('button', { type: 'button', class: 'gal-card tp-card' + (t === chosen ? ' is-sel' : ''), title: t.desc || t.name, 'data-tpl': t.id }, [
+      thumb(t),
+      h('span', { class: 'gal-card-name', text: t.name }),
+      h('span', { class: 'gal-card-meta', text: t.desc || '' })
+    ]);
+    c.addEventListener('click', function () { show(t); });
+    c.addEventListener('dblclick', function () { use(t); });
+    return c;
+  }
+
+  /** Pinta las fichas por tandas: mas de 250 no deben bloquear la ventana. */
+  function fillTpl() {
+    var q = norm(inSearch.value).split(/\s+/).filter(Boolean), gsel = selGroup.value;
+    var rows = [], n = 0;
+    groupList().forEach(function (g) {
+      if (gsel && g.name !== gsel) return;
+      var items = g.items.filter(function (t) {
+        if (!q.length) return true;
+        var hay = norm(t.name + ' ' + (t.desc || '') + ' ' + g.name);
+        return q.every(function (w) { return hay.indexOf(w) > -1; });
+      });
+      if (!items.length) return;
+      rows.push({ head: g.name + ' · ' + items.length });
+      items.forEach(function (t) { rows.push({ t: t }); });
+      n += items.length;
+    });
+    count.textContent = n + ' de ' + WB.TEMPLATES.length;
+    grid.textContent = '';
+    grid.scrollTop = 0;
+    if (!n) { grid.appendChild(h('p', { class: 'lib-empty', text: 'Ninguna plantilla coincide con esa búsqueda.' })); return; }
+    var mine = ++tjob, i = 0;
+    (function step() {
+      if (mine !== tjob) return;
+      var frag = document.createDocumentFragment();
+      for (var k = 0; k < 30 && i < rows.length; k++, i++) frag.appendChild(rows[i].head ? h('h4', { class: 'tp-group', text: rows[i].head }) : card(rows[i].t));
+      grid.appendChild(frag);
+      if (i < rows.length) requestAnimationFrame(step);
+    })();
+  }
+
   function build() {
     grid = h('div', { class: 'gal-grid tp-grid', tabIndex: 0 });
     inName = h('input', { type: 'text', class: 'input gal-name', spellcheck: false, autocomplete: 'off', placeholder: 'El titular de tu blog' });
@@ -131,35 +187,28 @@
       h('p', { class: 'gal-pv-foot', text: 'Así queda la página, a escala. Todo se puede cambiar después: textos, fotos, colores, fuentes y el fondo (pestaña Página).' })
     ]);
 
-    var groups = {};
-    WB.TEMPLATES.forEach(function (t) {
-      var g = t.group || 'Básicas';
-      (groups[g] = groups[g] || []).push(t);
-    });
-    Object.keys(groups).forEach(function (g) {
-      grid.appendChild(h('h4', { class: 'tp-group', text: g }));
-      groups[g].forEach(function (t) {
-        var c = h('button', { type: 'button', class: 'gal-card tp-card', title: t.desc || t.name, 'data-tpl': t.id }, [
-          thumb(t),
-          h('span', { class: 'gal-card-name', text: t.name }),
-          h('span', { class: 'gal-card-meta', text: t.desc || '' })
-        ]);
-        c.addEventListener('click', function () { show(t); });
-        c.addEventListener('dblclick', function () { use(t); });
-        grid.appendChild(c);
-      });
-    });
+    inSearch = h('input', { type: 'search', class: 'input', placeholder: 'Buscar: cocina, viaje, madera, revista, oscuro…', spellcheck: false, autocomplete: 'off' });
+    selGroup = h('select', { class: 'input' });
+    count = h('span', { class: 'gal-count' });
+    selGroup.appendChild(h('option', { value: '', text: 'Todas las colecciones' }));
+    groupList().forEach(function (g) { selGroup.appendChild(h('option', { value: g.name, text: g.name + ' (' + g.items.length + ')' })); });
+    inSearch.addEventListener('input', fillTpl);
+    selGroup.addEventListener('change', fillTpl);
 
     layer = h('div', { class: 'gallery tp-layer', hidden: true }, [
       h('header', { class: 'gal-head' }, [
         h('div', { class: 'gal-heading' }, [
-          h('h2', { class: 'gal-title', text: 'Nuevo blog — ' + WB.TEMPLATES.length + ' plantillas' }),
-          h('p', { class: 'gal-sub', text: 'Las de BitxoSOFT siguen la estructura de sus blogs; las de «Con fondo» llevan imagen o textura detrás. Clic para verla, doble clic para usarla.' })
+          h('h2', { class: 'gal-title', text: 'Nuevo blog — ' + WB.TEMPLATES.length + ' plantillas originales' }),
+          h('p', { class: 'gal-sub', text: 'Escritas a mano (BitxoSOFT, con fondo, formatos de blog) y ' + ((WB.TEMPLATE_TOPICS || []).length) + ' colecciones temáticas con 9 estructuras cada una. Clic para verla, doble clic para usarla.' })
         ]),
+        h('button', { type: 'button', class: 'btn', text: 'Capturar el estilo de una web…', title: 'Analiza un enlace y crea un blog muy parecido', onclick: function () { if (WB.capture) WB.capture.open(); } }),
         h('button', { type: 'button', class: 'btn', text: 'Cerrar (Esc)', onclick: function () { T.close(); } })
       ]),
       h('div', { class: 'gal-tools' }, [
-        h('label', { class: 'gal-field gal-field-name' }, [h('span', { text: 'Titular de portada' }), inName])
+        h('label', { class: 'gal-field gal-field-name' }, [h('span', { text: 'Titular de portada' }), inName]),
+        h('label', { class: 'gal-field gal-grow' }, [h('span', { text: 'Buscar' }), inSearch]),
+        h('label', { class: 'gal-field' }, [h('span', { text: 'Colección' }), selGroup]),
+        count
       ]),
       h('div', { class: 'gal-body' }, [grid, pv.box])
     ]);
@@ -173,13 +222,18 @@
     if (WB.edition && WB.edition.closeChooser) WB.edition.closeChooser();
     inName.value = name || '';
     layer.hidden = false;
+    fillTpl();
     show(chosen || WB.TEMPLATES[1] || WB.TEMPLATES[0]);
     requestAnimationFrame(fit);
     inName.focus();
   };
 
+  T.previewHtml = previewHtml;
+  T.refresh = function () { if (layer) { layer.remove(); layer = null; } };
+
   T.close = function () {
     clearTimeout(timer);
+    tjob++;
     if (layer) { layer.hidden = true; pv.frame.srcdoc = ''; }
   };
 

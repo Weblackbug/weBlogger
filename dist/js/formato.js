@@ -71,6 +71,17 @@
 
   F.reset = function () { saved = null; sync(); };
 
+  /**
+   * ¿Se puede dar formato ahora? Solo con el cursor o una seleccion dentro de
+   * un texto editable, o con un bloque de texto seleccionado.
+   */
+  F.canFormat = function () {
+    if (!doc()) return false;
+    if (live()) return true;
+    var s = E.sel;
+    return !!(s && (s.matches('[contenteditable="true"]') || s.querySelector('[contenteditable="true"]')));
+  };
+
   /* ====================================================== ordenes ======== */
 
   /** Orden clasica del navegador sobre el texto seleccionado. */
@@ -395,7 +406,7 @@
     if (HANDLERS[b.dataset.fmt]) HANDLERS[b.dataset.fmt]();
   });
 
-  var syncRaf = 0;
+  var syncRaf = 0, ribbonOn = null;
   function syncSoon() {
     if (syncRaf) return;
     syncRaf = requestAnimationFrame(function () { syncRaf = 0; sync(); });
@@ -405,8 +416,16 @@
   function sync() {
     var d = doc();
     var el = textTarget();
-    ribbon.classList.toggle('is-off', !d);
-    if (!d || !el) return;
+    var on = F.canFormat();
+    ribbon.classList.toggle('is-off', !on);
+    if (ribbonOn !== on) {
+      ribbonOn = on;
+      ribbon.querySelectorAll('button, select').forEach(function (c) { c.disabled = !on; });
+      ribbon.setAttribute('aria-disabled', on ? 'false' : 'true');
+      ribbon.title = on ? '' : 'Haz clic en un texto del artículo para darle formato';
+    }
+    if (WB.avail) WB.avail.refresh();
+    if (!on || !el) return;
     var node = live() ? saved.startContainer : el;
     if (node.nodeType !== 1) node = node.parentElement;
     var cs = d.defaultView.getComputedStyle(node || el);

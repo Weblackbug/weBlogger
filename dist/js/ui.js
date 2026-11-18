@@ -94,7 +94,12 @@
       btn.type = 'button';
       btn.className = 'menu-item';
       btn.setAttribute('role', 'menuitem');
-      if (it.disabled) btn.disabled = true;
+      // desactivada si no se puede usar ahora mismo (js/disponible.js)
+      if (it.disabled || (WB.avail && !WB.avail.item(it))) {
+        btn.disabled = true;
+        var why = WB.avail && WB.avail.why(it);
+        if (why) btn.title = why;
+      }
 
       var mark = document.createElement('span');
       mark.className = 'menu-mark';
@@ -118,6 +123,7 @@
         btn.appendChild(svgUse('ic-chevron-right'));
         var openSub = function (ev) {
           if (ev) ev.stopPropagation();
+          if (btn.disabled) { closeFrom(depth + 1); return; }
           closeFrom(depth + 1);
           openPop(typeof it.sub === 'function' ? it.sub() : it.sub, depth + 1, btn, pop);
         };
