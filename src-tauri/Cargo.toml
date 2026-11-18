@@ -1,6 +1,6 @@
 [package]
 name = "weblogger"
-version = "1.2.3"
+version = "1.2.4"
 description = "weBlogger - editor de articulos de blog sobre el entorno n.k-7"
 authors = ["Weblackbug"]
 edition = "2021"

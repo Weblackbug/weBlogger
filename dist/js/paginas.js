@@ -144,31 +144,33 @@
 
   /* ------------------------------------------------------------------------
      Pagina interior de periodico, como en los programas de maquetacion: no
-     pide titulo ni repite la portada. Hereda el estilo de la pagina actual
-     (la «pagina maestra») y llega con su folio (numero, cabecera, fecha y
-     seccion) y la rejilla de columnas vacia, lista para rellenar.
+     pide titulo, no repite la portada ni trae titulares de muestra. Hereda
+     el estilo de la pagina actual (la «pagina maestra»): arriba la cabecera
+     del periodico en pequeño, con la misma letra y filetes que la de la
+     portada, y debajo cuerpo de lectura corrido en columnas.
      ------------------------------------------------------------------------ */
-  var FILL = 'Escribe aquí el texto. Las columnas se llenan solas y el corte de cada hoja se ve en rojo.';
+  var READ = [
+    'Escribe aquí el texto de la página. Es cuerpo de lectura: corre de una columna a la siguiente sin que tengas que hacer nada, y donde se corta cada hoja al imprimir se ve una línea roja.',
+    'Pulsa Intro para empezar un párrafo nuevo. Si necesitas un titular, un ladillo, una foto o una cita, añádelos desde Elementos y quedarán encajados entre las columnas.'
+  ];
+  var COLS = { sabana: 6, berlines: 5, tabloide: 5, a3: 5, revista: 3, magazine: 3 };
 
   function fillerBody(s, n) {
     var e = WB.esc, st = WB.styles.byId[s.style];
-    // el nombre tal como esta escrito en la cabecera de la portada (stash ya guardo la actual)
-    var front = looseDoc(pub.pages[0].body).querySelector('.np-nameplate-name, .np-masthead, .masthead-name');
-    var mast = (front && front.textContent.trim()) || (st ? st.mast : (pub.pages[0].s.title || 'El periódico'));
+    // la cabecera tal como esta en la portada (stash ya guardo la pagina actual)
+    var front = looseDoc(pub.pages[0].body);
+    var plate = front.querySelector('.np-nameplate');
+    var nameEl = front.querySelector('.np-nameplate-name, .np-masthead, .masthead-name');
+    var mast = (nameEl && nameEl.textContent.trim()) || (st ? st.mast : (pub.pages[0].s.title || 'El periódico'));
     var fecha = WB.styles.ctx && st ? WB.styles.ctx(st, '').fecha : new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    var story = WB.npStory;
-    function pieza(span, size, tit, ps) {
-      return story(span, '<h3 class="np-title ' + size + '">' + tit + '</h3>' + ps.map(function (p) { return '<p>' + p + '</p>'; }).join(''));
-    }
+    var cls = plate ? plate.className.replace(/\bnp-mini\b/g, '').trim() : 'np-nameplate';
+    var cols = COLS[pub.paper] || 4;
     return '<main class="article-wrapper no-toc np-wide"><article class="article-content">' +
       '<section class="article-section np-interior" id="pagina-' + n + '-' + WB.uid() + '">' +
-        '<nav class="np-nav np-folio"><a href="#">Página ' + n + '</a><a href="#">' + e(mast) + '</a><a href="#">' + e(fecha) + '</a><a href="#">Sección</a></nav>' +
-        '<div class="np-grid rules">' +
-          pieza(8, 'np-lg', 'Titular de la noticia principal de la página', [FILL, FILL]) +
-          pieza(4, 'np-md', 'Segunda noticia', [FILL]) +
-          pieza(4, 'np-sm', 'Noticia', [FILL]) +
-          pieza(4, 'np-sm', 'Noticia', [FILL]) +
-          pieza(4, 'np-sm', 'Noticia', [FILL]) +
+        '<div class="' + e(cls) + ' np-mini"><h2 class="np-nameplate-name">' + e(mast) + '</h2>' +
+          '<div class="np-nameplate-line"><span>Página ' + n + '</span><span>' + e(fecha) + '</span><span>Sección</span></div></div>' +
+        '<div class="wb-flow" data-wb-slot style="column-count:' + cols + '">' +
+          READ.map(function (p) { return '<p>' + p + '</p>'; }).join('') +
         '</div>' +
       '</section></article></main>';
   }

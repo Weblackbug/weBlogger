@@ -5,8 +5,8 @@ con el frontend en HTML, CSS y JavaScript plano (sin bundler ni Node).
 
 ## Descargar
 
-- **[Instalador MSI para Windows (x64)](https://github.com/Weblackbug/weBlogger/releases/download/v1.2.3/weBlogger_1.2.3_x64_es-ES.msi)**: se instala con su acceso directo y abre los archivos `.weblog`.
-- [Ejecutable portable](https://github.com/Weblackbug/weBlogger/releases/download/v1.2.3/weBlogger_1.2.3_x64_portable.exe): no necesita instalación (requiere WebView2, incluido en Windows 10/11).
+- **[Instalador MSI para Windows (x64)](https://github.com/Weblackbug/weBlogger/releases/download/v1.2.4/weBlogger_1.2.4_x64_es-ES.msi)**: se instala con su acceso directo y abre los archivos `.weblog`.
+- [Ejecutable portable](https://github.com/Weblackbug/weBlogger/releases/download/v1.2.4/weBlogger_1.2.4_x64_portable.exe): no necesita instalación (requiere WebView2, incluido en Windows 10/11).
 
 Todas las versiones: [Releases](https://github.com/Weblackbug/weBlogger/releases).
 

@@ -1361,6 +1361,11 @@ body {
   color: var(--text-primary);
 }
 
+/* cabecera de las paginas interiores: la misma, en pequeño */
+.np-nameplate.np-mini { margin-bottom: 1.1rem; }
+.np-nameplate.np-mini .np-nameplate-name { font-size: clamp(1.3rem, 2.6vw, 1.9rem) !important; margin-bottom: 0.35rem !important; }
+.np-nameplate.np-mini .np-nameplate-line { font-size: 0.66rem; padding: 0.3rem 0.15rem; }
+
 .np-nameplate.frak .np-nameplate-name { font-family: 'UnifrakturMaguntia', var(--font-display) !important; font-weight: 400 !important; letter-spacing: 0; }
 .np-nameplate.caps .np-nameplate-name { text-transform: uppercase; letter-spacing: 0.04em; }
 
