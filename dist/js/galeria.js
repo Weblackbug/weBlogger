@@ -214,13 +214,15 @@
       if (!ok) return;
       var where = ed.medium === 'periodico' ? WB.edition.freeFile(D.slug(name)) : A.freeFolder(D.slug(name));
       return where.then(function (folder) {
-        var s = D.blank();
-        s.title = name;
-        s.pageName = 'Portada';
-        s.key = String(folder).replace(/[\\/]+$/, '').split(/[\\/]/).pop().replace(/\.weblog$/i, '');
-        S.apply(s, st);
-        WB.edition.pending = { medium: ed.medium, paper: ed.paper };
-        return A.openDoc({ s: s, body: S.build(st, name) }, folder, true);
+        return WB.busy.run("Componiendo la portada con el estilo " + st.name, function () {
+          var s = D.blank();
+          s.title = name;
+          s.pageName = 'Portada';
+          s.key = String(folder).replace(/[\\/]+$/, '').split(/[\\/]/).pop().replace(/\.weblog$/i, '');
+          S.apply(s, st);
+          WB.edition.pending = { medium: ed.medium, paper: ed.paper };
+          return A.openDoc({ s: s, body: S.build(st, name) }, folder, true);
+        });
       }).then(function () {
         WB.ui.status('publicación nueva con el estilo ' + st.name + ' · se guardará en ' + D.s.path);
       });

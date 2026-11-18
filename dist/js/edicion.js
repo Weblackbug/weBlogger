@@ -712,7 +712,7 @@
 
   /* ============================================ elegir la nueva edicion === */
 
-  var chooser = null, inTitle, paperBox, chosenPaper = 'tabloide', tplBox;
+  var chooser = null, inTitle, paperBox, chosenPaper = 'tabloide';
 
   function paperCard(p) {
     var ratio = p.mm[0] / p.mm[1];
@@ -732,7 +732,6 @@
   function buildChooser() {
     inTitle = h('input', { type: 'text', class: 'input ed-title', placeholder: 'Por ejemplo: La Gaceta de Portalba · número 1', spellcheck: false, autocomplete: 'off' });
     paperBox = h('div', { class: 'ed-papers' }, PAPERS.map(paperCard));
-    tplBox = h('div', { class: 'ed-tpls', hidden: true });
 
     var blog = h('section', { class: 'ed-card ed-blog' }, [
       h('div', { class: 'ed-icon' }, [WB.ui.svgUse('ic-globe')]),
@@ -745,9 +744,8 @@
       ]),
       h('div', { class: 'ed-actions' }, [
         h('button', { type: 'button', class: 'btn btn-primary', text: 'Con un estilo de prensa…', onclick: function () { go('blog'); } }),
-        h('button', { type: 'button', class: 'btn', text: 'Con una plantilla de blog', onclick: function () { tplBox.hidden = !tplBox.hidden; } })
-      ]),
-      tplBox
+        h('button', { type: 'button', class: 'btn', text: 'Con una plantilla de blog…', onclick: function () { WB.tplPick.open(inTitle.value.trim()); } })
+      ])
     ]);
 
     var paperCardEl = h('section', { class: 'ed-card ed-print' }, [
@@ -773,15 +771,6 @@
     ]);
     document.body.appendChild(chooser);
 
-    WB.TEMPLATES.forEach(function (t) {
-      var b = h('button', { type: 'button', class: 'btn btn-ghost', text: t.name, title: t.desc });
-      b.addEventListener('click', function () {
-        var name = inTitle.value.trim();
-        Ed.closeChooser();
-        A.newFrom(t.id, name || undefined).catch(WB.ui.fail);
-      });
-      tplBox.appendChild(b);
-    });
   }
 
   function go(medium) {
@@ -796,7 +785,6 @@
     if (WB.gallery && WB.gallery.close) WB.gallery.close();
     chooser.hidden = false;
     inTitle.value = '';
-    tplBox.hidden = true;
     inTitle.focus();
   };
   Ed.closeChooser = function () { if (chooser) chooser.hidden = true; };

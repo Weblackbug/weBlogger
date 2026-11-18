@@ -5,8 +5,8 @@ con el frontend en HTML, CSS y JavaScript plano (sin bundler ni Node).
 
 ## Descargar
 
-- **[Instalador MSI para Windows (x64)](https://github.com/Weblackbug/weBlogger/releases/download/v1.2.0/weBlogger_1.2.0_x64_es-ES.msi)**: se instala con su acceso directo y abre los archivos `.weblog`.
-- [Ejecutable portable](https://github.com/Weblackbug/weBlogger/releases/download/v1.2.0/weBlogger_1.2.0_x64_portable.exe): no necesita instalación (requiere WebView2, incluido en Windows 10/11).
+- **[Instalador MSI para Windows (x64)](https://github.com/Weblackbug/weBlogger/releases/download/v1.2.1/weBlogger_1.2.1_x64_es-ES.msi)**: se instala con su acceso directo y abre los archivos `.weblog`.
+- [Ejecutable portable](https://github.com/Weblackbug/weBlogger/releases/download/v1.2.1/weBlogger_1.2.1_x64_portable.exe): no necesita instalación (requiere WebView2, incluido en Windows 10/11).
 
 Todas las versiones: [Releases](https://github.com/Weblackbug/weBlogger/releases).
 
@@ -22,7 +22,7 @@ mi-articulo/
 
 No hay archivo de proyecto aparte. La paleta, las fuentes y los idiomas se
 vuelven a leer de esos mismos archivos, así que weBlogger abre también los
-artículos hechos a mano con esa estructura (los tres de ejemplo incluidos).
+artículos hechos a mano con esa estructura.
 
 ## Arrancar
 
@@ -92,6 +92,43 @@ El formato `.weblog` es un ZIP sin comprimir con `manifest.json` (formato,
 papel, título y lista de páginas), cada página en `paginas/N.html` con su hoja
 y su script, y las imágenes en `imagenes/`. El instalador asocia los `.weblog`
 a weBlogger: doble clic en el Explorador y se abren.
+
+## Plantillas de blog
+
+La tarjeta **Blog** de la biblioteca abre el selector de plantillas: fichas con
+miniatura a la izquierda y la página de verdad, a escala, a la derecha. Clic
+para verla, doble clic o *Crear el blog* para usarla.
+
+| Grupo | Plantillas |
+|---|---|
+| Básicas | En blanco |
+| BitxoSOFT | Patrimonio · Huerta y tradición · Casa y familia: la estructura de los blogs de BitxoSOFT (cabecera con emblema, portada con insignia y foto enmarcada, tira de cifras, índice lateral, tarjetas, cronología o fichas, cita, galería y pie firmado) |
+| Con fondo | Viajes y Cultura (foto a toda la portada) · Naturaleza y Crónica urbana (imagen quieta detrás de la página) · Cocina (papel) · Diario personal (cuaderno de renglones) · Tecnología (cuadrícula y aurora, en oscuro) · Minimal (puntos) |
+| Lectura y opinión | Ensayo de lectura larga · Boletín por correo · Entrevista · Escritorio del escritor |
+| Revista y medios | Revista digital · Directo minuto a minuto · Ensayo fotográfico · Episodio de pódcast · Crónica deportiva |
+| Prácticas y guías | Receta con ficha · Guía de viaje · Tutorial técnico · Lista de consejos · Análisis de producto · Bricolaje paso a paso · Explicador ilustrado |
+| Temáticas | Moda y estilo · Portafolio de estudio · Reseña de libro · Divulgación científica · Boda y eventos · Aula e infantil |
+
+Las de los cuatro últimos grupos siguen los formatos de los blogs más leídos (el ensayo largo, el boletín por correo, el análisis con «nuestra elección», el directo, la receta con ficha…): solo la idea del formato; nombres, textos, colores, ilustraciones y fondos son propios.
+
+En cualquier blog, **Artículo → Fondo de la página…** (o la pestaña *Página*)
+abre el **catálogo de 125 fondos** con su índice: papel y folios (blanco,
+marfil, cuadriculado, milimetrado, pautado, kraft, pergamino…), maderas (roble,
+nogal, pino, cerezo, ébano, tarimas…), telas, piedra y mármol, pizarras y
+corcho, metales, naturaleza, cielo y noche, geométricos (con los colores de la
+paleta, valen en claro y oscuro), retro, degradados e infantil. Se generan con
+SVG y CSS, sin imágenes de nadie. Al hacer clic se ven en la página al momento;
+*Cancelar* lo deja como estaba. También se puede poner una imagen propia con
+su **velo** para que se lea el texto. Seleccionando la portada, *Propiedades → Diseño de la
+portada* cambia entre foto al lado, **foto a toda la portada** con el titular
+encima, o portada centrada sin foto.
+
+## Barra de carga
+
+Todo lo que tarda (abrir, guardar, componer un estilo o una plantilla, añadir
+páginas, exportar, el PDF de imprenta) enseña una barra arriba y, si pasa de
+medio segundo, una tarjeta con lo que está haciendo, el porcentaje de archivos
+escritos o leídos y los segundos. No sale mientras hay un diálogo esperando.
 
 ## PDF para imprenta
 
@@ -217,7 +254,11 @@ weBlogger/
 │     ├─ env.js                 puente con Rust y Setup.cfg
 │     ├─ dialogs.js  ui.js      diálogos, menús, dock, tema (n.k-7)
 │     ├─ bloques.js             catálogo: tipos, elementos, fuentes, paletas
-│     ├─ plantillas.js          plantillas de inicio
+│     ├─ plantillas.js          plantillas de blog (BitxoSOFT y con fondo)
+│     ├─ plantillas-mas.js      22 plantillas con formatos de blog conocidos
+│     ├─ fondos-catalogo.js     125 fondos generados (papel, madera, piedra…)
+│     ├─ fondos.js              selector de plantillas y de fondos, portada
+│     ├─ ocupado.js             barra de carga (se carga la última)
 │     ├─ documento.js           leer y escribir la carpeta del artículo
 │     ├─ editor.js              selección, escritura, arrastrar, deshacer
 │     ├─ formato.js             cinta de texto, texto artístico, imágenes
@@ -230,6 +271,10 @@ weBlogger/
 
 - **Un elemento arrastrable**: una entrada en `WB.CATALOG` (`bloques.js`) con su
   HTML, su tipo en `WB.TYPES`, y sus reglas en `plantilla/estilos.css`.
+- **Una plantilla de blog**: una entrada en `WB.TEMPLATES` (`plantillas.js`)
+  con `build(titular)` y su `thumb` para la miniatura.
+- **Un fondo**: una línea `add(categoría, id, nombre, tono, css)` en
+  `fondos-catalogo.js`; el tono `theme` usa los colores de la paleta.
 - **Una paleta**: una entrada en `WB.PALETTES` (`bloques.js`).
 - **Una fuente**: una línea en `WB.FONTS` con los pesos que existen de verdad en
   Google Fonts (un peso inexistente hace fallar la hoja entera).

@@ -264,15 +264,15 @@
     ]));
 
     library.appendChild(h('h2', { class: 'lib-title', text: 'Empezar una edición' }));
-    function start(kind, icon, title, text, foot) {
+    function start(kind, icon, title, text, foot, action) {
       var ic = WB.ui.svgUse(icon);
-      return h('button', { type: 'button', class: 'start-card start-' + kind, 'data-action': 'edition' }, [
+      return h('button', { type: 'button', class: 'start-card start-' + kind, 'data-action': action || 'edition' }, [
         h('span', { class: 'start-icon' }, [ic]),
         h('span', { class: 'start-text' }, [h('b', { text: title }), h('span', { text: text }), h('small', { text: foot })])
       ]);
     }
     library.appendChild(h('div', { class: 'lib-start' }, [
-      start('blog', 'ic-globe', 'Blog', 'Para la web: las páginas se leen seguidas, deslizando, en claro y oscuro y en varios idiomas.', 'Se guarda como sitio web · HTML, CSS y JavaScript'),
+      start('blog', 'ic-globe', 'Blog', 'Para la web: ' + WB.TEMPLATES.length + ' plantillas, de la estructura BitxoSOFT a portadas a toda pantalla y fondos de imagen o textura.', 'Se guarda como sitio web · HTML, CSS y JavaScript', 'templates'),
       start('print', 'ic-masthead', 'Periódico o revista', 'Para imprimir en su tamaño de papel, viendo dónde corta cada hoja.', 'PDF de imprenta con sangrado, marcas de corte y CMYK · Word · .weblog'),
       start('styles', 'ic-palette', ((WB.styles && WB.styles.list.length) || 0) + ' estilos de prensa', 'Diarios de sábana, tabloides, semanarios, revistas y prensa del corazón de medio mundo.', 'Cada página, con el suyo')
     ]));
@@ -681,6 +681,7 @@
         { icon: 'ic-settings', label: 'Ajustes de la página', action: 'dock-tab:page' },
         { icon: 'ic-layers', label: 'Esquema', action: 'dock-tab:outline' },
         { sep: true },
+        { icon: 'ic-image', label: 'Fondo de la página…', action: 'backgrounds' },
         { icon: 'ic-palette', label: 'Paleta de colores', sub: function () { return Object.keys(WB.PALETTES).map(function (id) { return { label: WB.PALETTES[id].name, action: 'palette:' + id, check: 'pal:' + id }; }); } },
         { icon: 'ic-globe', label: 'Idioma que escribo', sub: langItems },
         { sep: true },
