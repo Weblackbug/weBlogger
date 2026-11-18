@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<title>Ver maqueta</title>
+<!--
+  Pinta una maqueta con una ficha de prueba, fuera de la aplicacion.
+    ver-maqueta.html?id=sabana            maqueta
+                    &v=1                  ficha de prueba: 1, 2, 3 o 4
+                    &tema=dark            tema oscuro
+                    &ficha=iberia-014     en vez de v: una ficha real (si su grupo ya existe en &grupo=iberia)
+  Para capturarla sin ventana:
+    msedge --headless=new --disable-gpu --hide-scrollbars --window-size=1400,3200
+           --user-data-dir=<carpeta temporal propia> --screenshot=<salida.png> "file:///.../ver-maqueta.html?id=sabana&v=2"
+-->
+<link rel="stylesheet" href="../dist/plantilla/estilos.css" />
+<link id="fonts" rel="stylesheet" href="" />
+<style id="vars"></style>
+</head>
+<body>
+<script>window.WB = {};</script>
+<script src="../dist/js/bloques.js"></script>
+<script src="../dist/js/ilustraciones.js"></script>
+<script src="../dist/js/estilos.js"></script>
+<script src="../dist/js/banco.js"></script>
+<script src="../dist/js/documento.js"></script>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var id = q.get('id') || 'sabana';
+  var base = { maqueta: id, mast: 'El Faro del Estuario', ref: 'ficha de prueba' };
+  var TEST = [
+    Object.assign({ id: 'v-001', name: 'Sobria con serifa', display: 'Playfair Display', body: 'Source Serif 4', ui: 'Inter', c: ['#ffffff', '#111417', '#1a5a96', '#b5451b'], t: {} }, base),
+    Object.assign({ id: 'v-002', name: 'Tabloide condensado', display: 'Anton', body: 'Roboto', ui: 'Oswald', c: ['#ffffff', '#101010', '#d4121a', '#f5c400'], t: { cab: 'bloque', filetes: 'gruesos', tit: 'condensada', peso: '400', dens: 'densa', foto: 'saturada', etq: 'caja', cap: 'ninguna' } }, base),
+    Object.assign({ id: 'v-003', name: 'Sábana gótica', display: 'Old Standard TT', body: 'EB Garamond', ui: 'EB Garamond', c: ['#fbfaf5', '#141414', '#3d4f5f', '#7a1f1f'], t: { cab: 'gotica', filetes: 'dobles', tit: 'cursiva', peso: '400', dens: 'densa', foto: 'bn', etq: 'texto', alin: 'centro', just: 'si' } }, base),
+    Object.assign({ id: 'v-004', name: 'Moderna aireada', display: 'Montserrat', body: 'Lora', ui: 'Montserrat', c: ['#fff7ef', '#1b1b1f', '#0b5cab', '#e85d04'], t: { cab: 'banda', filetes: 'ninguno', tit: 'normal', peso: '900', dens: 'aireada', foto: 'redonda', etq: 'pastilla', cap: 'color', radio: 'md' } }, base)
+  ];
+  function go() {
+    var st;
+    if (q.get('ficha')) st = WB.styles.byId[q.get('ficha')];
+    if (!st) { WB.addStyles('v', 'Pruebas', TEST); st = WB.styles.byId['v-00' + (q.get('v') || '1')] || WB.styles.byId['v-001']; }
+    WB.tpl = { css: '', formats: {} };
+    var s = WB.doc.s = WB.doc.blank();
+    WB.styles.apply(s, st);
+    document.getElementById('vars').textContent = WB.doc.varsCss() + '.reveal{opacity:1!important;transform:none!important}';
+    WB.styles.attrs(document.documentElement, s);
+    if (q.get('tema') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('fonts').href = WB.fontsUrl([st.display, st.body, st.ui, st.cabFont, 'UnifrakturMaguntia'].filter(Boolean));
+    try { document.body.insertAdjacentHTML('afterbegin', WB.styles.build(st, 'El nuevo puente une por fin las dos orillas de la ciudad')); }
+    catch (e) { document.body.insertAdjacentHTML('afterbegin', '<pre style="padding:2rem;color:#b00">' + e.stack + '</pre>'); }
+    document.title = id + ' · ' + st.name;
+  }
+  var pending = 1;
+  function done() { if (--pending === 0) go(); }
+  function load(src) { pending++; var sc = document.createElement('script'); sc.src = src; sc.onload = done; sc.onerror = done; document.body.appendChild(sc); }
+  load('../dist/js/maquetas/' + id + '.js');
+  if (q.get('grupo')) load('../dist/js/estilos/' + q.get('grupo') + '.js');
+  done();
+})();
+</script>
+</body>
+</html>

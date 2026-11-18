@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permisos base de weBlogger. Archivos y ventana pasan por comandos propios en Rust.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

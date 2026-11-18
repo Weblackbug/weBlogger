@@ -1,0 +1,81 @@
+/* ==========================================================
+   weBlogger - solo dentro del editor. Nada de esto se exporta.
+   ========================================================== */
+
+html { scroll-behavior: auto !important; }
+
+/* En el editor todo se ve desde el principio y nada se mueve al pasar el
+   ratón: los marcos de selección tienen que coincidir con lo que se ve. */
+.reveal { opacity: 1 !important; transform: none !important; }
+
+.stat-card:hover, .info-card:hover, .gallery-item:hover,
+.hero-frame:hover img, .media-figure:hover img, .gallery-item:hover img,
+.lang-btn:hover, .theme-btn:hover, .footer-signature:hover, .wb-btn:hover {
+  transform: none !important;
+}
+
+.site-header { position: relative !important; }
+.toc-sidebar { position: static !important; }
+.lightbox { display: none !important; }
+.reading-progress { display: none !important; }
+
+a { cursor: text; }
+img { cursor: pointer !important; }
+.hero-frame, .gallery-item { cursor: default !important; }
+
+[contenteditable="true"] { outline: none; cursor: text; }
+
+[contenteditable="true"]:hover {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 2px;
+}
+
+[contenteditable="true"]:focus {
+  box-shadow: 0 0 0 1px var(--accent);
+  border-radius: 2px;
+}
+
+[contenteditable="true"]:empty::before {
+  content: "Escribe aquí…";
+  opacity: 0.4;
+  font-style: italic;
+  pointer-events: none;
+}
+
+/* Un hueco vacío tiene que poder recibir bloques. */
+[data-wb-slot]:empty, .article-content:empty {
+  min-height: 70px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+}
+
+[data-wb-slot]:empty::before, .article-content:empty::before {
+  content: "Arrastra aquí un elemento";
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.wb-tab-panel:not(.is-active) { display: none !important; }
+
+.wb-spacer { background: repeating-linear-gradient(135deg, transparent 0 8px, var(--accent-soft) 8px 16px); border-radius: 4px; }
+
+/* El modal se edita abierto, dentro del flujo de la página. */
+.wb-modal { animation: none !important; }
+.wb-modal-wrap.wb-edit-open > .wb-modal {
+  display: grid;
+  position: static;
+  margin-top: 1rem;
+  border-radius: var(--radius-lg);
+  backdrop-filter: none;
+}
+.wb-modal-wrap.wb-edit-open .wb-modal-box { animation: none; max-height: none; }
+
+.wb-art svg { animation: none !important; cursor: pointer; }
+.wb-video iframe { pointer-events: none; }
+
+[hidden] { display: none !important; }
+
+/* kit de diario */
+.np-cover > img, .np-opinion-photo { cursor: pointer !important; }

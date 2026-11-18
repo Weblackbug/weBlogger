@@ -1,0 +1,11 @@
+# compilacion de Rust y Tauri (se regenera con cargo build)
+src-tauri/target/
+src-tauri/gen/
+
+# configuracion local de cada equipo (tema, panel, carpeta de la biblioteca)
+Setup.cfg
+
+# sistema
+Thumbs.db
+desktop.ini
+.DS_Store

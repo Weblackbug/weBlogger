@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>weBlogger</title>
+<meta name="description" content="weBlogger - editor de articulos de blog sobre el entorno n.k-7." />
+<meta name="color-scheme" content="dark light" />
+<link rel="stylesheet" href="./css/tokens.css" />
+<link rel="stylesheet" href="./css/base.css" />
+<link rel="stylesheet" href="./css/components.css" />
+<link rel="stylesheet" href="./css/editor.css" />
+</head>
+<body>
+
+<!-- =====================================================================
+     Sprite de iconos. Trazo de 1px, sin relleno, hereda currentColor.
+     La primera mitad es la de n.k-7; la segunda, los iconos del editor.
+     ================================================================== -->
+<svg class="nk7-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="ic-new" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7z"/><path d="M14 3v4h4"/><path d="M12 11v6M9 14h6"/></g></symbol>
+  <symbol id="ic-open" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M3 6h6l2 2h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><path d="M2 11h20"/></g></symbol>
+  <symbol id="ic-save" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 3h12l4 4v14H4z"/><path d="M8 3v6h8V5"/><rect x="8" y="13" width="8" height="5"/></g></symbol>
+  <symbol id="ic-saveas" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 3h11l3 3v8"/><path d="M4 3v18h8"/><path d="M8 3v5h7"/><path d="M15 21l6-6-2-2-6 6v2z"/></g></symbol>
+  <symbol id="ic-undo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M3 9h11a5 5 0 0 1 0 10H8"/><path d="M3 9l4-4M3 9l4 4"/></g></symbol>
+  <symbol id="ic-redo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M21 9H10a5 5 0 0 0 0 10h6"/><path d="M21 9l-4-4M21 9l-4 4"/></g></symbol>
+  <symbol id="ic-cut" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8 16L18 3M16 16L6 3"/></g></symbol>
+  <symbol id="ic-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="9" y="9" width="12" height="12" rx="1"/><path d="M6 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v2"/></g></symbol>
+  <symbol id="ic-paste" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M9 3h6v3H9z"/><path d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3"/><path d="M8 11h8M8 15h5"/></g></symbol>
+  <symbol id="ic-grid" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></g></symbol>
+  <symbol id="ic-layers" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></g></symbol>
+  <symbol id="ic-dock-left" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="16"/><path d="M9 4v16"/></g></symbol>
+  <symbol id="ic-dock-right" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="16"/><path d="M15 4v16"/></g></symbol>
+  <symbol id="ic-dock-top" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="16"/><path d="M3 10h18"/></g></symbol>
+  <symbol id="ic-dock-bottom" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="16"/><path d="M3 14h18"/></g></symbol>
+  <symbol id="ic-info" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></g></symbol>
+  <symbol id="ic-warn" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M12 3l9.5 17H2.5z"/><path d="M12 9v5M12 17v.5"/></g></symbol>
+  <symbol id="ic-error" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></g></symbol>
+  <symbol id="ic-ok" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></g></symbol>
+  <symbol id="ic-ask" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17v.5"/></g></symbol>
+  <symbol id="ic-settings" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></g></symbol>
+  <symbol id="ic-palette" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M12 21a9 9 0 1 1 9-9c0 2.5-2 3-3.5 3H16a2 2 0 0 0-1.4 3.4A2 2 0 0 1 12 21z"/><path d="M7.5 10v.5M11 7.5V8M15.5 9.5v.5"/></g></symbol>
+  <symbol id="ic-sparkle" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M18.5 16.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></g></symbol>
+  <symbol id="ic-image" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14"/><circle cx="8.5" cy="10" r="1.5"/><path d="M3 17l5-4 4 3 3-2 6 5"/></g></symbol>
+  <symbol id="ic-music" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="7" cy="18" r="2.5"/><circle cx="18" cy="16" r="2.5"/><path d="M9.5 18V7l11-2v11"/></g></symbol>
+  <symbol id="ic-sound" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 9h3l4-4v14l-4-4H4z"/><path d="M15.5 9.5a3.5 3.5 0 0 1 0 5M18 7a7 7 0 0 1 0 10"/></g></symbol>
+  <symbol id="ic-font" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 19l6-14 6 14M6.5 14h7"/><path d="M17 19h3"/></g></symbol>
+  <symbol id="ic-dialog" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M3 5h18v11H9l-6 4z"/><path d="M7 9h10M7 12h6"/></g></symbol>
+  <symbol id="ic-window" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="16"/><path d="M3 8h18M6 6v.5M8.5 6v.5M11 6v.5"/></g></symbol>
+  <symbol id="ic-maximize" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="4" y="4" width="16" height="16"/><path d="M9 9h6v6H9z"/></g></symbol>
+  <symbol id="ic-minimize" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M5 17h14"/></g></symbol>
+  <symbol id="ic-center" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="7" y="7" width="10" height="10"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></g></symbol>
+  <symbol id="ic-exit" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M14 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4"/><path d="M10 8l-4 4 4 4M6 12h9"/></g></symbol>
+  <symbol id="ic-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></g></symbol>
+  <symbol id="ic-trash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/><path d="M10 11v7M14 11v7"/></g></symbol>
+  <symbol id="ic-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/></g></symbol>
+  <symbol id="ic-chevron-right" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M9 6l6 6-6 6"/></g></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M5 13l4 4L19 7"/></g></symbol>
+  <symbol id="ic-terminal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="16"/><path d="M7 10l2.5 2.5L7 15M12 15h5"/></g></symbol>
+  <symbol id="ic-logo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="2.5" y="2.5" width="19" height="19" rx="4"/><path d="M2.5 8h19"/><path d="M6 11.5l1.6 6 1.9-5 1.9 5 1.6-6M15 17.5v-6h2.2a1.4 1.4 0 0 1 0 2.9H15h2.6a1.5 1.5 0 0 1 0 3.1z"/></g></symbol>
+  <symbol id="ic-monitor" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="4" width="20" height="13" rx="1.5"/><path d="M9 21h6M12 17v4"/></g></symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></g></symbol>
+  <symbol id="ic-align-left" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 6h16M4 10h10M4 14h16M4 18h10"/></g></symbol>
+  <symbol id="ic-align-center" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 6h16M7 10h10M4 14h16M7 18h10"/></g></symbol>
+  <symbol id="ic-align-right" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 6h16M10 10h10M4 14h16M10 18h10"/></g></symbol>
+  <symbol id="ic-align-justify" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></g></symbol>
+  <symbol id="ic-list" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M9 7h11M9 12h11M9 17h11"/><circle cx="5" cy="7" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="5" cy="17" r="1"/></g></symbol>
+  <symbol id="ic-list-num" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M10 7h10M10 12h10M10 17h10M4 5.5l1.5-.5v4M4 14h2.5L4 17.5h2.5"/></g></symbol>
+  <symbol id="ic-link" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></g></symbol>
+  <symbol id="ic-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g></symbol>
+  <symbol id="ic-globe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></g></symbol>
+  <symbol id="ic-tablet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M11 18h2"/></g></symbol>
+  <symbol id="ic-phone" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="7" y="3" width="10" height="18" rx="1.5"/><path d="M11 18h2"/></g></symbol>
+  <symbol id="ic-sun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></g></symbol>
+  <symbol id="ic-moon" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></g></symbol>
+  <symbol id="ic-up" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M12 19V5M6 11l6-6 6 6"/></g></symbol>
+  <symbol id="ic-down" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M12 5v14M6 13l6 6 6-6"/></g></symbol>
+  <symbol id="ic-grip" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6v.01M15 6v.01M9 12v.01M15 12v.01M9 18v.01M15 18v.01"/></g></symbol>
+  <symbol id="ic-parent" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v5"/></g></symbol>
+  <symbol id="ic-cursor" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M5 3l14 8-6 2-2 6z"/></g></symbol>
+  <symbol id="ic-close" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M6 6l12 12M18 6L6 18"/></g></symbol>
+  <symbol id="ic-book" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19a2 2 0 0 0 2 2h13M8 7h7"/></g></symbol>
+  <symbol id="ic-clear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M5 19h14M9 5h9M13 5l-3 10M7 16l9-12"/></g></symbol>
+  <symbol id="ic-symbol" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M5 19h4v-2a6 6 0 1 1 6 0v2h4"/></g></symbol>
+  <symbol id="ic-section" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="16"/><path d="M7 8h6M7 12h10M7 16h10"/></g></symbol>
+  <symbol id="ic-columns" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="16"/><path d="M12 4v16"/></g></symbol>
+  <symbol id="ic-columns3" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="16"/><path d="M9 4v16M15 4v16"/></g></symbol>
+  <symbol id="ic-flow" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 6h7M4 10h7M4 14h7M4 18h7M13 6h7M13 10h7M13 14h7M13 18h4"/></g></symbol>
+  <symbol id="ic-modal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="18"/><rect x="6" y="7" width="12" height="10"/><path d="M6 10h12"/></g></symbol>
+  <symbol id="ic-box" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 8v8M10 10h8M10 14h5"/></g></symbol>
+  <symbol id="ic-tabs" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M3 8h18v12H3zM3 8V4h6v4M9 4h6v4"/></g></symbol>
+  <symbol id="ic-accordion" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="5"/><rect x="3" y="11" width="18" height="9"/><path d="M6 6.5h6"/></g></symbol>
+  <symbol id="ic-divider" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M3 12h18M8 7h8M8 17h8"/></g></symbol>
+  <symbol id="ic-spacer" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 5h16M4 19h16M12 8v8M9.5 10.5L12 8l2.5 2.5M9.5 13.5L12 16l2.5-2.5"/></g></symbol>
+  <symbol id="ic-headline" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M5 5h14M12 5v9M4 18h16"/></g></symbol>
+  <symbol id="ic-h2" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 6v12M11 6v12M4 12h7M15 10.5a2 2 0 1 1 3.5 1.3L15 16h4.5"/></g></symbol>
+  <symbol id="ic-h3" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 6v12M11 6v12M4 12h7M15 9.5h4l-2.4 2.9a2.1 2.1 0 1 1-1.8 3.4"/></g></symbol>
+  <symbol id="ic-kicker" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 7h8M4 12h16M4 16h12"/></g></symbol>
+  <symbol id="ic-para" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 6h16M4 10h16M4 14h16M4 18h9"/></g></symbol>
+  <symbol id="ic-dropcap" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 12l3-7 3 7M5 10h4M13 6h7M13 10h7M4 15h16M4 19h12"/></g></symbol>
+  <symbol id="ic-lead" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 5h16M4 10h16M4 15h12M4 19h8"/></g></symbol>
+  <symbol id="ic-quote" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M5 8h4v4a3 3 0 0 1-3 3M13 8h4v4a3 3 0 0 1-3 3"/></g></symbol>
+  <symbol id="ic-pull" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M3 5h18M3 19h18M7 10h10M8 14h8"/></g></symbol>
+  <symbol id="ic-byline" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="7" cy="9" r="3"/><path d="M3 18a4 4 0 0 1 8 0M14 8h7M14 12h5"/></g></symbol>
+  <symbol id="ic-note" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M5 4h14v12l-4 4H5z"/><path d="M15 20v-4h4M8 9h8M8 13h5"/></g></symbol>
+  <symbol id="ic-masthead" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M3 5h18M3 19h18M6 16V8l5 8V8M15 8v8M15 8h4M15 12h3M15 16h4"/></g></symbol>
+  <symbol id="ic-mediatext" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="6" width="8" height="12"/><path d="M14 8h7M14 12h7M14 16h5"/></g></symbol>
+  <symbol id="ic-gallery" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></g></symbol>
+  <symbol id="ic-video" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M10 9l5 3-5 3z"/></g></symbol>
+  <symbol id="ic-code" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13 5l-2 14"/></g></symbol>
+  <symbol id="ic-cards" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="8" height="14" rx="1"/><rect x="13" y="5" width="8" height="14" rx="1"/></g></symbol>
+  <symbol id="ic-specs" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="2.5" y="8" width="5.5" height="8"/><rect x="9.25" y="8" width="5.5" height="8"/><rect x="16" y="8" width="5.5" height="8"/></g></symbol>
+  <symbol id="ic-timeline" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M6 3v18M10 7h10M10 12h8M10 17h10"/><circle cx="6" cy="7" r="1.5"/><circle cx="6" cy="12" r="1.5"/><circle cx="6" cy="17" r="1.5"/></g></symbol>
+  <symbol id="ic-stats" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M5 20V10M11 20V4M17 20v-8M21 20H3"/></g></symbol>
+  <symbol id="ic-table" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="16"/><path d="M3 9h18M3 14.5h18M10 9v11"/></g></symbol>
+  <symbol id="ic-button" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="8" width="18" height="8" rx="4"/><path d="M8 12h8"/></g></symbol>
+</svg>
+
+<!-- =====================================================================
+     SPLASH: tapa la ventana al arrancar y vuelve a salir en «Acerca de»
+     ================================================================== -->
+<div id="splash" class="splash" role="status" aria-label="weBlogger">
+  <div class="splash-stage">
+    <img id="splashImg" class="splash-img" src="./media/splash.png" alt="weBlogger - BitxoSOFT (c) 2026" draggable="false" />
+    <canvas id="splashGL" class="splash-gl" hidden></canvas>
+  </div>
+  <p id="splashInfo" class="splash-info" hidden></p>
+</div>
+
+<!-- =====================================================================
+     APLICACION
+     ================================================================== -->
+<div id="app" class="app-shell" data-dock="right" data-dock-open="true" data-view="library">
+
+  <!-- ---------- barra de menu ---------- -->
+  <header id="menubar" class="menubar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24"><use href="#ic-logo"></use></svg>
+      <span class="brand-name">we<b>Blogger</b></span>
+    </div>
+    <nav id="menuRoot" class="menu-root" role="menubar" aria-label="Menu principal"></nav>
+    <div class="menubar-right">
+      <span id="docName" class="doc-name"></span>
+      <span id="dirtyFlag" class="dirty-flag" hidden>&bull; sin guardar</span>
+      <button class="icon-btn" type="button" data-action="about" title="Acerca de (F1)" aria-label="Acerca de">
+        <svg viewBox="0 0 24 24"><use href="#ic-info"></use></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ---------- barra de herramientas ---------- -->
+  <div id="toolbar" class="toolbar" role="toolbar" aria-label="Archivo y vista">
+    <div class="tool-group">
+      <button class="icon-btn" type="button" data-action="new" title="Nuevo artículo (Ctrl+N)"><svg viewBox="0 0 24 24"><use href="#ic-new"></use></svg></button>
+      <button class="icon-btn" type="button" data-action="library" title="Biblioteca de artículos (Ctrl+O)"><svg viewBox="0 0 24 24"><use href="#ic-book"></use></svg></button>
+      <button class="icon-btn" type="button" data-action="save" title="Guardar (Ctrl+S)"><svg viewBox="0 0 24 24"><use href="#ic-save"></use></svg></button>
+    </div>
+    <span class="tool-sep"></span>
+    <div class="tool-group only-editor">
+      <button class="icon-btn" type="button" data-action="undo" title="Deshacer (Ctrl+Z)"><svg viewBox="0 0 24 24"><use href="#ic-undo"></use></svg></button>
+      <button class="icon-btn" type="button" data-action="redo" title="Rehacer (Ctrl+Y)"><svg viewBox="0 0 24 24"><use href="#ic-redo"></use></svg></button>
+    </div>
+    <span class="tool-sep only-editor"></span>
+    <div class="tool-group only-editor">
+      <button class="btn btn-ghost" type="button" data-action="preview" title="Ver la página funcionando (F5)"><svg viewBox="0 0 24 24"><use href="#ic-eye"></use></svg> Vista previa</button>
+      <button class="icon-btn" type="button" data-action="browser" title="Abrir en el navegador"><svg viewBox="0 0 24 24"><use href="#ic-globe"></use></svg></button>
+    </div>
+    <span class="tool-sep only-editor"></span>
+    <div class="tool-group only-editor" role="group" aria-label="Ancho de la página">
+      <button class="icon-btn is-active" type="button" data-action="device:0" data-device="0" title="Ancho de escritorio"><svg viewBox="0 0 24 24"><use href="#ic-monitor"></use></svg></button>
+      <button class="icon-btn" type="button" data-action="device:820" data-device="820" title="Ancho de tableta"><svg viewBox="0 0 24 24"><use href="#ic-tablet"></use></svg></button>
+      <button class="icon-btn" type="button" data-action="device:390" data-device="390" title="Ancho de móvil"><svg viewBox="0 0 24 24"><use href="#ic-phone"></use></svg></button>
+    </div>
+    <span class="tool-sep only-editor"></span>
+    <div class="tool-group only-editor">
+      <button id="pageThemeBtn" class="icon-btn" type="button" data-action="page-theme" title="Ver el artículo en claro u oscuro"><svg viewBox="0 0 24 24"><use href="#ic-moon"></use></svg></button>
+      <label id="editLangField" class="tool-field" title="Idioma que estás escribiendo" hidden>
+        <svg viewBox="0 0 24 24"><use href="#ic-globe"></use></svg>
+        <select id="editLang" aria-label="Idioma de edición"></select>
+      </label>
+    </div>
+    <span class="tool-spacer"></span>
+    <div class="tool-group only-editor" role="group" aria-label="Posicion del panel">
+      <button class="icon-btn" type="button" data-dock-side="left" title="Panel a la izquierda"><svg viewBox="0 0 24 24"><use href="#ic-dock-left"></use></svg></button>
+      <button class="icon-btn" type="button" data-dock-side="right" title="Panel a la derecha"><svg viewBox="0 0 24 24"><use href="#ic-dock-right"></use></svg></button>
+      <button class="icon-btn" type="button" data-dock-side="top" title="Panel arriba"><svg viewBox="0 0 24 24"><use href="#ic-dock-top"></use></svg></button>
+      <button class="icon-btn" type="button" data-dock-side="bottom" title="Panel abajo"><svg viewBox="0 0 24 24"><use href="#ic-dock-bottom"></use></svg></button>
+    </div>
+    <button class="icon-btn" type="button" data-action="app-theme" title="Aplicación en claro u oscuro"><svg viewBox="0 0 24 24"><use href="#ic-sun"></use></svg></button>
+    <label class="tool-field">
+      <svg viewBox="0 0 24 24"><use href="#ic-palette"></use></svg>
+      <select id="themeSelect" aria-label="Tema de la aplicación">
+        <option value="light">claro</option>
+        <option value="dark">oscuro</option>
+        <option value="metal">metal</option>
+        <option value="blue">azul</option>
+      </select>
+    </label>
+  </div>
+
+  <!-- ---------- cinta de formato de texto ---------- -->
+  <div id="ribbon" class="toolbar ribbon is-off" role="toolbar" aria-label="Formato de texto">
+    <label class="tool-field" title="Estilo de párrafo">
+      <select id="fmtPara" aria-label="Estilo de párrafo">
+        <option value="">Estilo…</option>
+        <option value="p">Párrafo</option>
+        <option value="h2">Título</option>
+        <option value="h3">Subtítulo</option>
+        <option value="h4">Título menor</option>
+        <option value="lead">Entradilla</option>
+        <option value="dropcap">Letra capital</option>
+        <option value="pull">Cita destacada</option>
+        <option value="note">Nota</option>
+      </select>
+    </label>
+    <label class="tool-field" title="Fuente"><select id="fmtFont" aria-label="Fuente"></select></label>
+    <div class="tool-field size-field" title="Tamaño de letra en píxeles">
+      <button class="glyph-btn" type="button" data-fmt="smaller" title="Más pequeña">A−</button>
+      <input id="fmtSize" type="number" min="8" max="200" step="1" aria-label="Tamaño" />
+      <button class="glyph-btn" type="button" data-fmt="bigger" title="Más grande">A+</button>
+    </div>
+    <span class="tool-sep"></span>
+    <div class="tool-group">
+      <button class="icon-btn glyph" type="button" data-fmt="bold" title="Negrita (Ctrl+B)"><b>N</b></button>
+      <button class="icon-btn glyph" type="button" data-fmt="italic" title="Cursiva (Ctrl+I)"><i>K</i></button>
+      <button class="icon-btn glyph" type="button" data-fmt="underline" title="Subrayado (Ctrl+U)"><u>S</u></button>
+      <button class="icon-btn glyph" type="button" data-fmt="strike" title="Tachado"><s>T</s></button>
+      <button class="icon-btn glyph" type="button" data-fmt="sup" title="Superíndice">x<sup>2</sup></button>
+      <button class="icon-btn glyph" type="button" data-fmt="sub" title="Subíndice">x<sub>2</sub></button>
+    </div>
+    <span class="tool-sep"></span>
+    <div class="tool-group">
+      <label class="color-tool" title="Color del texto"><span>A</span><input id="fmtColor" type="color" value="#b85d19" /></label>
+      <label class="color-tool hl" title="Resaltado"><span>A</span><input id="fmtHilite" type="color" value="#ffe066" /></label>
+      <button class="icon-btn glyph" type="button" data-fmt="nocolor" title="Quitar color y resaltado">A<small>×</small></button>
+    </div>
+    <span class="tool-sep"></span>
+    <div class="tool-group">
+      <button class="icon-btn" type="button" data-fmt="left" title="Alinear a la izquierda"><svg viewBox="0 0 24 24"><use href="#ic-align-left"></use></svg></button>
+      <button class="icon-btn" type="button" data-fmt="center" title="Centrar"><svg viewBox="0 0 24 24"><use href="#ic-align-center"></use></svg></button>
+      <button class="icon-btn" type="button" data-fmt="right" title="Alinear a la derecha"><svg viewBox="0 0 24 24"><use href="#ic-align-right"></use></svg></button>
+      <button class="icon-btn" type="button" data-fmt="justify" title="Justificar"><svg viewBox="0 0 24 24"><use href="#ic-align-justify"></use></svg></button>
+    </div>
+    <span class="tool-sep"></span>
+    <div class="tool-group">
+      <button class="icon-btn" type="button" data-fmt="ul" title="Lista con viñetas"><svg viewBox="0 0 24 24"><use href="#ic-list"></use></svg></button>
+      <button class="icon-btn" type="button" data-fmt="ol" title="Lista numerada"><svg viewBox="0 0 24 24"><use href="#ic-list-num"></use></svg></button>
+      <button class="icon-btn" type="button" data-fmt="link" title="Enlace (Ctrl+K)"><svg viewBox="0 0 24 24"><use href="#ic-link"></use></svg></button>
+    </div>
+    <span class="tool-sep"></span>
+    <div class="tool-group">
+      <button class="icon-btn glyph" type="button" data-fmt="upper" title="Mayúsculas">AA</button>
+      <button class="icon-btn glyph" type="button" data-fmt="smallcaps" title="Versalitas">A<small>A</small></button>
+    </div>
+    <label class="tool-field" title="Interlineado">
+      <select id="fmtLine" aria-label="Interlineado">
+        <option value="">Interlineado…</option>
+        <option value="1">1,0</option>
+        <option value="1.15">1,15</option>
+        <option value="1.4">1,4</option>
+        <option value="1.75">1,75</option>
+        <option value="2">2,0</option>
+        <option value="2.5">2,5</option>
+      </select>
+    </label>
+    <label class="tool-field" title="Efectos de texto"><select id="fmtFx" aria-label="Efecto de texto"></select></label>
+    <div class="tool-group">
+      <button class="icon-btn" type="button" data-fmt="symbols" title="Símbolos"><svg viewBox="0 0 24 24"><use href="#ic-symbol"></use></svg></button>
+      <button class="icon-btn" type="button" data-fmt="clear" title="Quitar el formato"><svg viewBox="0 0 24 24"><use href="#ic-clear"></use></svg></button>
+    </div>
+  </div>
+
+  <!-- ---------- area de trabajo ---------- -->
+  <main id="workspace" class="workspace">
+
+    <section id="canvas" class="canvas">
+      <!-- biblioteca: lo que se ve sin articulo abierto -->
+      <div id="library" class="library"></div>
+
+      <!-- la pagina del articulo, con los marcos de seleccion encima -->
+      <div id="stage" class="stage" data-device="full" hidden>
+        <iframe id="pageFrame" class="page-frame" title="Página del artículo"></iframe>
+        <div id="overlay" class="overlay">
+          <div id="ovHover" class="ov-hover" hidden></div>
+          <div id="ovSel" class="ov-sel" hidden></div>
+          <div id="ovDrop" class="ov-drop" hidden></div>
+          <div id="ovBar" class="ov-bar" hidden>
+            <button id="ovGrip" class="ov-btn grip" type="button" data-free title="Arrastra para mover el bloque"><svg viewBox="0 0 24 24"><use href="#ic-grip"></use></svg></button>
+            <span id="ovLabel" class="ov-label"></span>
+            <button class="ov-btn" type="button" data-action="sel-parent" title="Seleccionar lo que lo contiene (Esc)"><svg viewBox="0 0 24 24"><use href="#ic-parent"></use></svg></button>
+            <button class="ov-btn" type="button" data-free data-action="move:-1" title="Subir (Alt+↑)"><svg viewBox="0 0 24 24"><use href="#ic-up"></use></svg></button>
+            <button class="ov-btn" type="button" data-free data-action="move:1" title="Bajar (Alt+↓)"><svg viewBox="0 0 24 24"><use href="#ic-down"></use></svg></button>
+            <button class="ov-btn" type="button" data-free data-action="dup" title="Duplicar (Ctrl+D)"><svg viewBox="0 0 24 24"><use href="#ic-copy"></use></svg></button>
+            <button class="ov-btn" type="button" data-free data-action="del" title="Eliminar"><svg viewBox="0 0 24 24"><use href="#ic-trash"></use></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- paginas de la publicacion: una pestaña por pagina -->
+      <div id="pageBar" class="page-bar" hidden></div>
+    </section>
+
+    <!-- barra fina: un clic pliega el panel, arrastrar cambia su ancho -->
+    <button id="dockHandle" class="dock-handle" type="button" aria-controls="dock" aria-expanded="true" title="Clic: plegar o desplegar · Arrastrar: cambiar el ancho">
+      <span class="dock-handle-grip"></span>
+    </button>
+
+    <aside id="dock" class="dock" aria-label="Panel del editor">
+      <header class="dock-head">
+        <span class="dock-title">Editor</span>
+        <div class="dock-sides" role="group" aria-label="Mover panel">
+          <button class="icon-btn mini" type="button" data-dock-side="left" title="Izquierda"><svg viewBox="0 0 24 24"><use href="#ic-dock-left"></use></svg></button>
+          <button class="icon-btn mini" type="button" data-dock-side="top" title="Arriba"><svg viewBox="0 0 24 24"><use href="#ic-dock-top"></use></svg></button>
+          <button class="icon-btn mini" type="button" data-dock-side="bottom" title="Abajo"><svg viewBox="0 0 24 24"><use href="#ic-dock-bottom"></use></svg></button>
+          <button class="icon-btn mini" type="button" data-dock-side="right" title="Derecha"><svg viewBox="0 0 24 24"><use href="#ic-dock-right"></use></svg></button>
+        </div>
+      </header>
+
+      <nav class="dock-tabs" role="tablist">
+        <button class="dock-tab is-active" type="button" role="tab" data-tab="blocks">Elementos</button>
+        <button class="dock-tab" type="button" role="tab" data-tab="props">Propiedades</button>
+        <button class="dock-tab" type="button" role="tab" data-tab="page">Página</button>
+        <button class="dock-tab" type="button" role="tab" data-tab="outline">Esquema</button>
+        <button class="dock-tab" type="button" role="tab" data-tab="articles">Artículos</button>
+      </nav>
+
+      <div class="dock-body">
+        <div id="paneBlocks" class="dock-pane is-active" data-pane="blocks"></div>
+        <div id="paneProps" class="dock-pane" data-pane="props"></div>
+        <div id="panePage" class="dock-pane" data-pane="page"></div>
+        <div id="paneOutline" class="dock-pane" data-pane="outline"></div>
+        <div id="paneArticles" class="dock-pane" data-pane="articles"></div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ---------- barra de estado ---------- -->
+  <footer class="statusbar">
+    <span id="statusMsg" class="status-msg">listo</span>
+    <span class="status-spacer"></span>
+    <span id="statusSel" class="status-cell">nada seleccionado</span>
+    <span id="statusWords" class="status-cell">0 palabras</span>
+    <span id="statusLang" class="status-cell">es</span>
+    <span id="statusTheme" class="status-cell">tema: dark</span>
+    <span id="statusVersion" class="status-cell">weBlogger</span>
+  </footer>
+</div>
+
+<!-- vista previa: la pagina tal como quedara, con su JavaScript en marcha -->
+<div id="preview" class="preview" hidden>
+  <div class="preview-bar">
+    <b>Vista previa</b>
+    <span class="panel-note">así se verá publicada: prueba los idiomas, el tema, los modales y las imágenes</span>
+    <span class="tool-spacer"></span>
+    <button class="icon-btn is-active" type="button" data-action="preview-device:0" data-pdevice="0" title="Escritorio"><svg viewBox="0 0 24 24"><use href="#ic-monitor"></use></svg></button>
+    <button class="icon-btn" type="button" data-action="preview-device:820" data-pdevice="820" title="Tableta"><svg viewBox="0 0 24 24"><use href="#ic-tablet"></use></svg></button>
+    <button class="icon-btn" type="button" data-action="preview-device:390" data-pdevice="390" title="Móvil"><svg viewBox="0 0 24 24"><use href="#ic-phone"></use></svg></button>
+    <span class="tool-sep"></span>
+    <button class="btn" type="button" data-action="browser">Abrir en el navegador</button>
+    <button class="btn btn-primary" type="button" data-action="preview-close">Volver al editor (Esc)</button>
+  </div>
+  <div class="preview-stage"><iframe id="previewFrame" class="page-frame" title="Vista previa"></iframe></div>
+</div>
+
+<div id="dragGhost" class="drag-ghost" hidden></div>
+<input id="filePicker" type="file" accept="image/*" hidden />
+
+<div id="menuLayer" class="menu-layer" hidden></div>
+<div id="dialogLayer" class="dialog-layer" hidden></div>
+<div id="toastLayer" class="toast-layer"></div>
+
+<script src="./js/env.js"></script>
+<script src="./js/dialogs.js"></script>
+<script src="./js/ui.js"></script>
+<script src="./js/bloques.js"></script>
+<script src="./js/plantillas.js"></script>
+<script src="./js/ilustraciones.js"></script>
+<script src="./js/estilos.js"></script>
+<script src="./js/banco.js"></script>
+<script src="./js/estilos/iberia.js"></script>
+<script src="./js/estilos/britanica.js"></script>
+<script src="./js/estilos/norteamerica.js"></script>
+<script src="./js/estilos/europa.js"></script>
+<script src="./js/estilos/revistas.js"></script>
+<script src="./js/estilos/mundo.js"></script>
+<script src="./js/maquetas/sabana.js"></script>
+<script src="./js/maquetas/referencia.js"></script>
+<script src="./js/maquetas/tabloide.js"></script>
+<script src="./js/maquetas/modular.js"></script>
+<script src="./js/maquetas/revista.js"></script>
+<script src="./js/maquetas/reportaje.js"></script>
+<script src="./js/maquetas/rosa.js"></script>
+<script src="./js/maquetas/financiero.js"></script>
+<script src="./js/maquetas/deportivo.js"></script>
+<script src="./js/maquetas/cultural.js"></script>
+<script src="./js/maquetas/local.js"></script>
+<script src="./js/maquetas/digital.js"></script>
+<script src="./js/documento.js"></script>
+<script src="./js/editor.js"></script>
+<script src="./js/formato.js"></script>
+<script src="./js/paneles.js"></script>
+<script src="./js/splash.js"></script>
+<script src="./js/app.js"></script>
+<script src="./js/oficina.js"></script>
+<script src="./js/paginas.js"></script>
+<script src="./js/galeria.js"></script>
+<script src="./js/articulos.js"></script>
+<script src="./js/exportar.js"></script>
+<script src="./js/edicion.js"></script>
+<script src="./js/redaccion.js"></script>
+</body>
+</html>
