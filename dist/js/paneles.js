@@ -251,8 +251,18 @@
 
   function advGroup(el, t) {
     var kids = [];
-    if (t.kind === 'section' || el.id) {
-      kids.push(fText('Ancla (para enlazar con #nombre)', el.id, function (v) { el.id = WB.doc.slug(v); E.commit(); }, { lazy: true }));
+    // cualquier bloque puede tener un ancla: un enlace a #nombre salta hasta el
+    if (!el.closest('.site-header')) {
+      kids.push(fText('Ancla: nombre para saltar aquí con #nombre', el.id, function (v) {
+        var id = String(v || '').replace(/^#/, '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+          .replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+        if (!id) { if (t.kind !== 'section') el.removeAttribute('id'); E.commit(); return; }
+        var base = id, d = el.ownerDocument;
+        for (var n = 2; d.getElementById(id) && d.getElementById(id) !== el; n++) id = base + '-' + n;
+        el.id = id;
+        E.commit();
+        WB.ui.status('Ancla lista: un enlace a «#' + id + '» salta hasta este bloque');
+      }, { lazy: true }));
     }
     if (E.isFree(el)) {
       kids.push(fCheck('Aparece con animación al llegar a él', el.classList.contains('reveal'), function (v) { el.classList.toggle('reveal', v); chg(); }));

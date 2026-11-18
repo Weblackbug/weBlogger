@@ -1299,3 +1299,26 @@ html.is-busy, html.is-busy * { cursor: progress !important; }
 .cap-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .cap-layer.is-working .cap-view { opacity: .85; }
 @media (max-width: 1300px) { .cap-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .cap-side { grid-column: 1 / -1; max-height: 40vh; } }
+
+/* ===================================== a donde lleva un enlace (enlaces.js) */
+.link-card {
+  position: absolute; z-index: 40;
+  width: max-content; max-width: min(440px, calc(100% - 16px)); min-width: 240px;
+  padding: 10px 12px 10px;
+  background: var(--panel-solid); color: var(--txt);
+  border: 1px solid var(--line-2); border-left: 3px solid var(--accent);
+  border-radius: var(--radius); box-shadow: var(--shadow-3);
+  display: grid; gap: 4px;
+}
+.link-card[hidden] { display: none; }
+.link-card.is-warn { border-left-color: var(--warn, #c98a12); }
+.link-card-head { display: flex; align-items: center; gap: 7px; font-size: 11px; letter-spacing: .04em; color: var(--txt-3); text-transform: uppercase; }
+.link-card-icon { font-size: 14px; text-transform: none; }
+.link-card-dest { font-size: 14px; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.link-card.is-warn .link-card-dest { color: var(--warn, #c98a12); }
+.link-card-url { font: 11.5px var(--mono); color: var(--txt-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.link-card-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.link-card-btns .btn { min-height: 28px; padding: 0 10px; font-size: 12px; }
+.link-edit { display: grid; gap: 10px; margin-top: 4px; }
+.link-edit .field { display: grid; gap: 4px; font-size: 12px; color: var(--txt-2); }
+.link-edit .field.check { display: flex; align-items: center; gap: 8px; }
